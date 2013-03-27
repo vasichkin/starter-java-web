@@ -34,7 +34,9 @@ case platform
     set["tomcat"]["webapp_dir"] = "/var/lib/tomcat6/webapps"
 end
 
-default['war']['deploy'] = "https://s3.amazonaws.com/undeploy-petstore/org.springframework.samples.jpetstore-1.0.0-SNAPSHOT.war"
+default['war']['deploy']['git']['url'] = ""
+default['war']['deploy']['git']['revision'] = ""
+default['war']['deploy']['url'] = ""
 default['database']['hosts'] = ["127.0.0.1"]
 default['database']['port'] = "3306"
 default['database']['name'] = "jpetstore"

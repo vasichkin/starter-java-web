@@ -1,21 +1,16 @@
-include_recipe "haproxy"
+
+service "haproxy" do
+  supports :restart => true, :status => true, :reload => true
+  action [:enable]
+end
 
 template "/etc/haproxy/haproxy.cfg" do
   source "jpetstore-haproxy.cfg.erb"
   owner "root"
   group "root"
-  mode 0777
+  mode 0644
   variables(
     :nodes => node['haproxy.rebalance']['nodes']
   )
-end
-
-(node['haproxy.rebalance']['nodes'].size * 2).times do
-  bash "stop all mysql" do
-    user "root"
-    cwd "/tmp"
-    code <<-EOH
-    sleep 1; curl 'http://127.0.0.1:80/status.do'
-    EOH
-  end
+  notifies :restart, "service[haproxy]"
 end
