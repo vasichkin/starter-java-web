@@ -16,6 +16,17 @@ if not node['war']['deploy']['url'].empty?
     mode '0777'
   end
 elsif not node['war']['deploy']['git']['url'].empty?
+  execute "clear" do
+    command "rm -rf /tmp/app"
+    action :run
+  end
+
+  cookbook_file ::File.join( ENV['HOME'], '.ssh', 'config' ) do
+    mode 0644
+    user "ubuntu"
+    group "ubuntu"
+  end
+
   case node[:platform]
   when "debian", "ubuntu"
     package "git-core" do
@@ -38,12 +49,12 @@ elsif not node['war']['deploy']['git']['url'].empty?
   end
 
   execute "package" do
-    command "mvn clean package"
+    command "cd /tmp/app; mvn clean package"
     action :run
   end
 
   execute "move" do 
-    command "cd /tmp/app; target/*.war /tmp/app.war; rm -rf /tmp/app"
+    command "cd /tmp/app; cp target/*.war /tmp/app.war; rm -rf /tmp/app"
     action :run
   end
 end
