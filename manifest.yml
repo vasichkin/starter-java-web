@@ -50,7 +50,7 @@ launch:
               roles: [ lb-node ]
               runList: ["recipe[haproxy]"]
               isSolo: true
-              recipeUrl: "https://github.com/qubell/cookbooks/raw/0.1/cookbooks.tar.gz"
+              recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
 
         - app:
             action: .install.app
@@ -70,7 +70,7 @@ launch:
             description: Application IP address
             value: ${app-hosts}
         lb-hosts:
-            description: Loab Balancer IP address
+            description: Load Balancer IP address
             value: ${lb-hosts}
         app-url:
             description: Url to the application
@@ -208,7 +208,7 @@ destroy:
           roles: [ db-node ]
           runList: ["recipe[mysql::server]"]
           isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.1/cookbooks.tar.gz"
+          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
           jattrs:
               mysql:
                 server_root_password: e653e94ee8d064ec95ef5a1381c87a23
@@ -221,12 +221,14 @@ destroy:
         precedingPhases: [ install-db ]
         parameters:
           roles: [ db-node ]
-          runList: ["recipe[war::mysql]"]
+          runList: ["recipe[qubell::mysql]"]
           isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.1/cookbooks.tar.gz"
+          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
           jattrs:
               database:
                 name: "petclinic"
+                user: "petclinic"
+                password: "petclinic"
                 schema: "https://raw.github.com/${app-fork}/starter-java-web/${app-branch}/src/main/resources/db/mysql/petclinic-mysql-schema.sql"
                 data:   "https://raw.github.com/${app-fork}/starter-java-web/${app-branch}/src/main/resources/db/mysql/petclinic-mysql-dataload.sql"
 
@@ -242,32 +244,19 @@ destroy:
         phase: deploy-app
         parameters:
           roles: [ app-node ]
-          runList: ["recipe[war]"]
+          runList: ["recipe[qubell::webapp]"]
           isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.1/cookbooks.tar.gz"
+          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
           jattrs:
-            war:
-              deploy:
-                git:
-                  url: git://github.com/${app-fork}/starter-java-web.git
-                  revision: ${app-branch}
-
-    - configure-datasource:
-        action: "chefrun"
-        phase: configure-app
-        precedingPhases: [ deploy-app ]
-        parameters:
-          roles: [ app-node ]
-          runList: ["recipe[war::configure]"]
-          isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.1/cookbooks.tar.gz"
-          jattrs:
-            configure:
-              source: "https://raw.github.com/${app-fork}/starter-java-web/${app-branch}/src/main/resources/db/mysql/petclinic-database.properties.erb"
-              to: "classes/jdbc.properties"
-              variables:
-                hosts: ${db-hosts}
-                database: "petclinic"
+            scm:
+              provider: "git"
+              repository: git://github.com/${app-fork}/starter-java-web.git
+              revision: ${app-branch}
+            database:
+              name: "petclinic"
+              host: ${db-hosts}
+              user: "petclinic"
+              password: "petclinic"
 
 .setup.lb:
   parameters:
@@ -278,9 +267,9 @@ destroy:
         action: "chefrun"
         parameters:
           roles: [ lb-node ]
-          runList: ["recipe[war::lb]"]
+          runList: ["recipe[qubell::lb]"]
           isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.1/cookbooks.tar.gz"
+          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
           jattrs:
             haproxy.rebalance:
               nodes: ${app-hosts}
@@ -294,15 +283,6 @@ destroy:
     - app-fork: *app-fork
     - app-branch: *app-branch
   steps:
-    - install-app:
-        action: "chefrun"
-        phase: install-app
-        parameters:
-          roles: [ app-node ]
-          runList: ["recipe[tomcat]"]
-          isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.1/cookbooks.tar.gz"
-
     - deploy:
         action: .deploy.app
         phase: deploy-app
