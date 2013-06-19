@@ -11,19 +11,29 @@ launch:
         - app-branch: &app-branch
             description: Source control branch
             default: "HEAD"
+        - os: &os
+            description: Operation System
+            default: "us-east-1/ami-0fac7566"
+            enum:
+              "ubuntu-10.4": "us-east-1/ami-0fac7566"
+              "ubuntu-12.4": "us-east-1/ami-d0f89fb9"
+              "centos-5.3": "us-east-1/ami-beda31d7"
+              "centos-6.3": "us-east-1/ami-e585118c"
     steps:
         - db-tier:
             action: .compute.grow
             parameters:
                 roleName: db-node
+                os: "{$.os}"
             output:
-                 db-hosts: ips
+                 db-hosts: privateips
 
         - app-tier:
             action: .compute.grow
             parameters:
                 roleName: app-node
-                quantity: ${app-tier-size}
+                quantity: "{$.app-tier-size}"
+                os: "{$.os}"
             output:
                 app-hosts: ips
 
@@ -31,6 +41,7 @@ launch:
             action: .compute.grow
             parameters:
                 roleName: lb-node
+                os: "{$.os}"
             output:
                 lb-hosts: ips
 
@@ -39,8 +50,8 @@ launch:
             precedingPhases: [ provision ]
             phase: deploy-db
             parameters:
-              app-fork: ${app-fork}
-              app-branch: ${app-branch}
+              app-fork: "{$.app-fork}"
+              app-branch: "{$.app-branch}"
 
         - lb-install:
             action: "chefrun"
@@ -57,21 +68,21 @@ launch:
             precedingPhases: [ provision ]
             phase: deploy-app
             parameters:
-              db-hosts: ${db-hosts}
-              app-hosts: ${app-hosts}
-              app-fork: ${app-fork}
-              app-branch: ${app-branch}
+              db-hosts: "{$.db-hosts}"
+              app-hosts: "{$.app-hosts}"
+              app-fork: "{$.app-fork}"
+              app-branch: "{$.app-branch}"
 
     return:
         db-hosts:
             description: Database IP address
-            value: ${db-hosts}
+            value: "{$.db-hosts}"
         app-hosts:
             description: Application IP address
-            value: ${app-hosts}
+            value: "{$.app-hosts}"
         lb-hosts:
             description: Load Balancer IP address
-            value: ${lb-hosts}
+            value: "{$.lb-hosts}"
         app-url:
             description: Url to the application
             value: "http://{$.lb-tier~hosts[0]}"
@@ -88,13 +99,15 @@ scale-up:
             max: 20
         - app-fork: *app-fork
         - app-branch: *app-branch
+        - os: *os
 
     steps:
         - app-tier:
             action: .compute.grow
             parameters:
                 roleName: app-node
-                quantity: ${app-count}
+                quantity: "{$.app-count}"
+                os: "{$.os}"
             output:
                 app-hosts: ips
 
@@ -103,15 +116,15 @@ scale-up:
             precedingPhases: [ provision ]
             phase: deploy-app
             parameters:
-              db-hosts: ${db-hosts}
-              app-hosts: ${app-hosts}
-              app-fork: ${app-fork}
-              app-branch: ${app-branch}
+              db-hosts: "{$.db-hosts}"
+              app-hosts: "{$.app-hosts}"
+              app-fork: "{$.app-fork}"
+              app-branch: "{$.app-branch}"
 
     return:
         app-hosts:
             description: Application IP address
-            value: ${app-hosts}
+            value: "{$.app-hosts}"
 
 scale-down:
     parameters:
@@ -126,19 +139,19 @@ scale-down:
             parameters:
               phase: "destroy"
               roleName: app-node
-              quantity: ${app-count}
+              quantity: "{$.app-count}"
 
         - setup-lb:
             action: .setup.lb
             precedingPhases: [ destroy ]
             phase: setup-lb
             parameters:
-               app-hosts: ${app-hosts}
+               app-hosts: "{$.app-hosts}"
 
     return:
         app-hosts:
             description: Application IP address
-            value: ${app-hosts}
+            value: "{$.app-hosts}"
 
 
 update:
@@ -150,9 +163,9 @@ update:
         - update-app:
             action: .deploy.app
             parameters:
-              db-hosts: ${db-hosts}
-              app-fork: ${app-fork}
-              app-branch: ${app-branch}
+              db-hosts: "{$.db-hosts}"
+              app-fork: "{$.app-fork}"
+              app-branch: "{$.app-branch}"
 
 destroy:
     steps:
@@ -172,29 +185,34 @@ destroy:
         default: undefined
     - credential:
         default: undefined
+    - os:
+        default: undefined
   steps:
     provision-vms:
       action: "provisionVms"
       parameters:
-         phase: ${phase}
-         roleName: ${roleName}
+         phase: "{$.phase}"
+         roleName: "{$.roleName}"
          hardwareId: m1.small
-         quantity: ${quantity}
+         quantity: "{$.quantity}"
          retryCount: 1
          jcloudsProvider: aws-ec2
          jcloudsEndpoint: https://ec2.us-east-1.amazonaws.com
          jcloudsRegions: us-east-1
          jcloudsNodeNamePrefix: petclinic
-         jcloudsIdentity: ${identity}
-         jcloudsCredential: ${credential}
+         jcloudsIdentity: "{$.identity}"
+         jcloudsCredential: "{$.credential}"
          vmIdentity: ubuntu
-         imageId: us-east-1/ami-0fac7566
+         imageId: "{$.os}"
          ec2SecurityGroup: default
       output:
          hosts: ips
+         privateips: privateips
   return:
     ips:
-      value: ${hosts}
+      value: "{$.hosts}"
+    privateips:
+      value: "{$.privateips}"
 
 .deploy.db:
   parameters:
@@ -229,8 +247,8 @@ destroy:
                 name: "petclinic"
                 user: "petclinic"
                 password: "petclinic"
-                schema: "https://raw.github.com/${app-fork}/starter-java-web/${app-branch}/src/main/resources/db/mysql/petclinic-mysql-schema.sql"
-                data:   "https://raw.github.com/${app-fork}/starter-java-web/${app-branch}/src/main/resources/db/mysql/petclinic-mysql-dataload.sql"
+                schema: "https://raw.github.com/{$.app-fork}/starter-java-web/{$.app-branch}/src/main/resources/db/mysql/petclinic-mysql-schema.sql"
+                data:   "https://raw.github.com/{$.app-fork}/starter-java-web/{$.app-branch}/src/main/resources/db/mysql/petclinic-mysql-dataload.sql"
 
 .deploy.app:
   parameters:
@@ -250,11 +268,11 @@ destroy:
           jattrs:
             scm:
               provider: "git"
-              repository: git://github.com/${app-fork}/starter-java-web.git
-              revision: ${app-branch}
+              repository: git://github.com/{$.app-fork}/starter-java-web.git
+              revision: "{$.app-branch}"
             database:
               name: "petclinic"
-              host: ${db-hosts}
+              host: "{$.db-hosts}"
               user: "petclinic"
               password: "petclinic"
 
@@ -272,7 +290,7 @@ destroy:
           recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
           jattrs:
             haproxy.rebalance:
-              nodes: ${app-hosts}
+              nodes: "{$.app-hosts}"
 
 .install.app:
   parameters:
@@ -283,20 +301,29 @@ destroy:
     - app-fork: *app-fork
     - app-branch: *app-branch
   steps:
+    - install-app:
+        action: "chefrun"
+        phase: install-app
+        parameters:
+          roles: [ app-node ]
+          runList: ["recipe[tomcat]"]
+          isSolo: true
+          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
+
     - deploy:
         action: .deploy.app
         phase: deploy-app
         precedingPhases: [ install-app ]
         parameters:
-          db-hosts: ${db-hosts}
-          app-fork: ${app-fork}
-          app-branch: ${app-branch}
+          db-hosts: "{$.db-hosts}"
+          app-fork: "{$.app-fork}"
+          app-branch: "{$.app-branch}"
 
     - setup-lb:
         action: .setup.lb
         precedingPhases: [ deploy-app ]
         phase: setup-lb
         parameters:
-          app-hosts: ${app-hosts}
+          app-hosts: "{$.app-hosts}"
 
 
