@@ -1,0 +1,57 @@
+[submodule "cookbooks/apt"]
+	path = cookbooks/apt
+	url = git@github.com:opscode-cookbooks/apt.git
+[submodule "cookbooks/chef_handler"]
+	path = cookbooks/chef_handler
+	url = git@github.com:opscode-cookbooks/chef_handler.git
+[submodule "cookbooks/java"]
+	path = cookbooks/java
+	url = git@github.com:opscode-cookbooks/java.git
+[submodule "cookbooks/jpackage"]
+	path = cookbooks/jpackage
+	url = git@github.com:opscode-cookbooks/jpackage.git
+[submodule "cookbooks/mysql"]
+	path = cookbooks/mysql
+	url = git@github.com:opscode-cookbooks/mysql.git
+[submodule "cookbooks/openssl"]
+	path = cookbooks/openssl
+	url = git@github.com:opscode-cookbooks/openssl.git
+[submodule "cookbooks/tomcat"]
+	path = cookbooks/tomcat
+	url = git@github.com:opscode-cookbooks/tomcat.git
+[submodule "cookbooks/yum"]
+	path = cookbooks/yum
+	url = git@github.com:opscode-cookbooks/yum.git
+[submodule "cookbooks/yumrepo"]
+	path = cookbooks/yumrepo
+	url = git@github.com:atomic-penguin/cookbook-yumrepo.git
+[submodule "cookbooks/application_java"]
+	path = cookbooks/application_java
+	url = git@github.com:opscode-cookbooks/application_java.git
+[submodule "cookbooks/application"]
+	path = cookbooks/application
+	url = git@github.com:opscode-cookbooks/application.git
+[submodule "cookbooks/windows"]
+	path = cookbooks/windows
+	url = git@github.com:opscode-cookbooks/windows.git
+[submodule "cookbooks/git"]
+	path = cookbooks/git
+	url = git@github.com:opscode-cookbooks/git.git
+[submodule "cookbooks/dmg"]
+	path = cookbooks/dmg
+	url = git@github.com:opscode-cookbooks/dmg.git
+[submodule "cookbooks/ark"]
+	path = cookbooks/ark
+	url = git@github.com:eanrollings/ark.git
+[submodule "cookbooks/maven"]
+	path = cookbooks/maven
+	url = git@github.com:opscode-cookbooks/maven.git
+[submodule "cookbooks/runit"]
+	path = cookbooks/runit
+	url = git@github.com:opscode-cookbooks/runit.git
+[submodule "cookbooks/database"]
+	path = cookbooks/database
+	url = git@github.com:opscode-cookbooks/database.git
+[submodule "cookbooks/build-essential"]
+	path = cookbooks/build-essential
+	url = git@github.com:opscode-cookbooks/build-essential.git
