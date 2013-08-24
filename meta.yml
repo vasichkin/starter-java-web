@@ -1,7 +1,9 @@
-application:
+kit:
   name: "Java 3-tier Starter Kit"
   link: https://github.com/qubell/starter-java-web
-  manifest: https://raw.github.com/qubell/starter-java-web/master/manifest.yml
+  applications:
+    - name: Java 3-tier Starter Kit
+      manifest: https://raw.github.com/qubell/starter-java-web/master/manifest.yml
   provider:
     name: "Qubell"
     link: http://qubell.com
