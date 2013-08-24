@@ -1,4 +1,4 @@
-application:
+kit:
   name: "Java 3-tier Starter Kit"
   link: https://github.com/qubell/starter-java-web
   applications:
