@@ -70,7 +70,7 @@ launch:
               roles: [ lb-node ]
               runList: ["recipe[haproxy]"]
               isSolo: true
-              recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
+              recipeUrl: "https://raw.github.com/qubell/starter-java-web/qubell/cookbooks.tar.gz"
 
         - app:
             action: .install.app
@@ -239,7 +239,7 @@ destroy:
           roles: [ db-node ]
           runList: ["recipe[mysql::server]"]
           isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
+          recipeUrl: "https://raw.github.com/qubell/starter-java-web/qubell/cookbooks.tar.gz"
           jattrs:
               mysql:
                 server_root_password: e653e94ee8d064ec95ef5a1381c87a23
@@ -254,7 +254,7 @@ destroy:
           roles: [ db-node ]
           runList: ["recipe[qubell::mysql]"]
           isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
+          recipeUrl: "https://raw.github.com/qubell/starter-java-web/qubell/cookbooks.tar.gz"
           jattrs:
               database:
                 name: "petclinic"
@@ -277,7 +277,7 @@ destroy:
           roles: [ app-node ]
           runList: ["recipe[qubell::webapp]"]
           isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
+          recipeUrl: "https://raw.github.com/qubell/starter-java-web/qubell/cookbooks.tar.gz"
           jattrs:
             scm:
               provider: "git"
@@ -300,7 +300,7 @@ destroy:
           roles: [ lb-node ]
           runList: ["recipe[qubell::lb]"]
           isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
+          recipeUrl: "https://raw.github.com/qubell/starter-java-web/qubell/cookbooks.tar.gz"
           jattrs:
             haproxy.rebalance:
               nodes: "{$.app-hosts}"
@@ -321,7 +321,7 @@ destroy:
           roles: [ app-node ]
           runList: ["recipe[tomcat]"]
           isSolo: true
-          recipeUrl: "https://github.com/qubell/cookbooks/raw/0.2/cookbooks.tar.gz"
+          recipeUrl: "https://raw.github.com/qubell/starter-java-web/qubell/cookbooks.tar.gz"
 
     - deploy:
         action: .deploy.app
@@ -338,5 +338,3 @@ destroy:
         phase: setup-lb
         parameters:
           app-hosts: "{$.app-hosts}"
-
-
