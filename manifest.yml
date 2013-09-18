@@ -151,6 +151,8 @@ scale-down:
               phase: "destroy"
               roleName: app-node
               quantity: "{$.app-count}"
+            output:
+              app-hosts: ips
 
         - setup-lb:
             action: .setup.lb
