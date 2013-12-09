@@ -18,7 +18,7 @@ launch:
               "ubuntu-10.4": "us-east-1/ami-0fac7566"
               "ubuntu-12.4": "us-east-1/ami-d0f89fb9"
               "centos-5.3": "us-east-1/ami-beda31d7"
-              "centos-6.3": "us-east-1/ami-e585118c"
+              "centos-6.3": "us-east-1/ami-eb6b0182"
         - identity: &identity
             description: VM identity
             default: "ubuntu"
