@@ -321,7 +321,7 @@ destroy:
         phase: install-app
         parameters:
           roles: [ app-node ]
-          runList: ["recipe[tomcat]"]
+          runList: ["recipe[qubell::tomcat]"]
           isSolo: true
           recipeUrl: "https://raw.github.com/qubell/starter-java-web/qubell/cookbooks.tar.gz"
 
