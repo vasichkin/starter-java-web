@@ -28,6 +28,7 @@ launch:
     steps:
         - db-tier:
             action: .compute.grow
+            phase: provision
             parameters:
                 roleName: db-node
                 os: "{$.os}"
@@ -37,6 +38,7 @@ launch:
 
         - app-tier:
             action: .compute.grow
+            phase: provision
             parameters:
                 roleName: app-node
                 quantity: "{$.app-tier-size}"
@@ -47,6 +49,7 @@ launch:
 
         - lb-tier:
             action: .compute.grow
+            phase: provision
             parameters:
                 roleName: lb-node
                 os: "{$.os}"
@@ -114,6 +117,7 @@ scale-up:
     steps:
         - app-tier:
             action: .compute.grow
+            phase: provision
             parameters:
                 roleName: app-node
                 quantity: "{$.app-count}"
@@ -146,9 +150,9 @@ scale-down:
             max: 20
     steps:
         - shrink-app-tier:
-            action: "destroyVms"
+            action: destroyVms
+            phase: destroy
             parameters:
-              phase: "destroy"
               roleName: app-node
               quantity: "{$.app-count}"
             output:
@@ -188,8 +192,6 @@ destroy:
 
 .compute.grow:
   parameters:
-    - phase:
-        default: provision
     - roleName:
         default: defaultRole
     - quantity:
@@ -204,9 +206,8 @@ destroy:
         default: undefined
   steps:
     provision-vms:
-      action: "provisionVms"
+      action: provisionVms
       parameters:
-         phase: "{$.phase}"
          roleName: "{$.roleName}"
          hardwareId: m1.small
          quantity: "{$.quantity}"
