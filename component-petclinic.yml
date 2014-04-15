@@ -56,7 +56,7 @@ application:
               change-grants: send-command(list<string> app-hosts, string db-name, string db-user, string db-password, list<string> privileges)
               run-sql: send-command(string db-name, list<string> sql-url)
             app-manage:
-              build-app: send-command(string scm-provider, string git-uri, string app-branch)
+              build-app: send-command(string scm-provider, string git-uri, string app-branch => list<string> wars)
               deploy-libs: send-command(list<string> lib-uri)
               deploy-war: send-command(string war-uri, object context-attrs, object context-nodes)
             app-output:
@@ -435,7 +435,7 @@ application:
         input:
           quantity: configuration(string)
         management:
-          build-app: receive-command(string scm-provider, string git-uri, string app-branch)
+          build-app: receive-command(string scm-provider, string git-uri, string app-branch => list<string> wars)
           deploy-libs: receive-command(list<string> lib-uri)
           deploy-war: receive-command(string war-uri, object context-attrs, object context-nodes)
         output:
